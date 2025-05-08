@@ -2,66 +2,51 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sorting Visualizer</title>
-    <style>
-      body {
-        font-family: sans-serif;
-        margin: 2rem;
-        text-align: center;
-      }
-      .bar {
-        display: inline-block;
-        width: 20px;
-        margin: 1px;
-        background-color: steelblue;
-      }
-      #controls {
-        margin-bottom: 1rem;
-      }
-    </style>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Sorting Visualizer</h1>
+    <h1>Sorting Algorithm Visualizer</h1>
 
     <div id="controls">
-      <button onclick="startSort()">Sort</button>
+      <select id="algorithmSelect">
+        <option value="bubbleSort">Bubble Sort</option>
+        <option value="selectionSort">Selection Sort</option>
+        <option value="insertionSort">Insertion Sort</option>
+        <option value="cocktailShakerSort">Cocktail Shaker Sort</option>
+        <option value="combSort">Comb Sort</option>
+        <option value="gnomeSort">Gnome Sort</option>
+        <option value="oddEvenSort">Odd-Even Sort</option>
+        <option value="bitonicSort">Bitonic Sort</option>
+        <option value="timSort">Tim Sort</option>
+        <option value="bogoSort">Bogo Sort</option>
+        <option value="bozoSort">Bozo Sort</option>
+        <option value="stoogeSort">Stoge Sort</option>
+        <option vlaue="sleepSort">Sleep Sort</option>
+        <option value="pancakeSort">Pancake Sort</option>
+        <option value="spaghettiSort">Spaghetti Sort</option>
+        <option value="mergeSort">Merge Sort</option>
+        <option value="quickSort">Quick Sort</option>
+        <option value="heapSort">Heap Sort</option>
+        <option value="shellSort">Shell Sort</option>
+        <option value="radixSort">Radix Sort</option>
+        <option value="countingSort">Counting Sort</option>
+        <option value="bucketSort">Bucket Sort</option>
+        <option value="bitonicMergeSort">Bitonic Merge Sort</option>
+        <option value="patienceSort">Patience Sort</option>
+        <option value="flashSort">Flash Sort</option>
+      </select>
+      <button id="playPauseBtn">Play</button>
+      <button id="stepBtn">Step</button>
+      <button id="resetBtn">Reset</button>
+      <br />
+      <label for="speedSlider">Speed:</label>
+      <input type="range" id="speedSlider" min="1" max="100" value="90">
     </div>
 
     <div id="bars"></div>
 
-    <script>
-      let data = Array.from({ length: 20 }, () =>
-        Math.floor(Math.random() * 100)
-      );
-      const barsDiv = document.getElementById("bars");
-
-      function drawBars(arr) {
-        barsDiv.innerHTML = "";
-        arr.forEach((height) => {
-          const bar = document.createElement("div");
-          bar.className = "bar";
-          bar.style.height = `${height * 3}px`;
-          barsDiv.appendChild(bar);
-        });
-      }
-
-      function sleep(ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-      }
-
-      async function startSort() {
-        for (let i = 0; i < data.length; i++) {
-          for (let j = 0; j < data.length - i - 1; j++) {
-            if (data[j] > data[j + 1]) {
-              [data[j], data[j + 1]] = [data[j + 1], data[j]];
-              drawBars(data);
-              await sleep(100);
-            }
-          }
-        }
-      }
-
-      drawBars(data);
-    </script>
+    <script type="module" src="main.js"></script>
   </body>
 </html>

@@ -1,0 +1,26 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  padding: 1rem;
+}
+
+#controls {
+  margin-bottom: 1rem;
+}
+
+#bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 300px;
+  border: 1px solid #ccc;
+  margin: auto;
+  max-width: 90vw;
+}
+
+.bar {
+  width: 10px;
+  margin: 0 1px;
+  background-color: steelblue;
+  transition: height 0.1s, background-color 0.1s;
+}
