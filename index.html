@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sorting Visualizer</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 2rem;
+        text-align: center;
+      }
+      .bar {
+        display: inline-block;
+        width: 20px;
+        margin: 1px;
+        background-color: steelblue;
+      }
+      #controls {
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Sorting Visualizer</h1>
+
+    <div id="controls">
+      <button onclick="startSort()">Sort</button>
+    </div>
+
+    <div id="bars"></div>
+
+    <script>
+      let data = Array.from({ length: 20 }, () =>
+        Math.floor(Math.random() * 100)
+      );
+      const barsDiv = document.getElementById("bars");
+
+      function drawBars(arr) {
+        barsDiv.innerHTML = "";
+        arr.forEach((height) => {
+          const bar = document.createElement("div");
+          bar.className = "bar";
+          bar.style.height = `${height * 3}px`;
+          barsDiv.appendChild(bar);
+        });
+      }
+
+      function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
+      async function startSort() {
+        for (let i = 0; i < data.length; i++) {
+          for (let j = 0; j < data.length - i - 1; j++) {
+            if (data[j] > data[j + 1]) {
+              [data[j], data[j + 1]] = [data[j + 1], data[j]];
+              drawBars(data);
+              await sleep(100);
+            }
+          }
+        }
+      }
+
+      drawBars(data);
+    </script>
+  </body>
+</html>
