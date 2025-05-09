@@ -1,6 +1,7 @@
 import { drawBars } from "./utils/drawBars.js";
 import { bubbleSort } from "./algorithms/bubbleSort.js";
 import { selectionSort } from "./algorithms/selectionSort.js";
+import { flashSort } from "./algorithms/flashSort.js";
 
 let array = [];
 let iterator = null;
@@ -38,6 +39,7 @@ const algorithmSizes = {
 const algorithms = {
   bubbleSort,
   selectionSort,
+  flashSort,
 };
 
 function getAlgorithmFunction() {
