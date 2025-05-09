@@ -1,76 +1,75 @@
 export function* flashSort(arr) {
   const a = arr.slice();
   const n = a.length;
-  
+
   if (n <= 1) return;
-  
-  // Find min and max values
-  let min = a[0];
-  let max = a[0];
-  let maxIndex = 0;
-  
+
+  // Step 1: Find min and max
+  let min = a[0],
+    max = a[0],
+    maxIndex = 0;
   for (let i = 1; i < n; i++) {
-    if (a[i] < min) {
-      min = a[i];
-    } else if (a[i] > max) {
+    if (a[i] < min) min = a[i];
+    if (a[i] > max) {
       max = a[i];
       maxIndex = i;
     }
   }
-  
-  // Return if all elements are the same
-  if (max === min) return;
-  
-  // Calculate bucket count (0.43 is an empirically derived coefficient)
+
+  if (min === max) return; // All elements are equal
+
+  // Step 2: Bucket setup
   const m = Math.floor(0.43 * n);
   const buckets = new Array(m).fill(0);
-  
-  // Count elements per bucket
+
+  const getClass = (value) =>
+    Math.floor(((m - 1) * (value - min)) / (max - min));
+
+  // Step 3: Count distribution
   for (let i = 0; i < n; i++) {
-    const bucketIndex = Math.floor((m - 1) * (a[i] - min) / (max - min));
-    buckets[bucketIndex]++;
+    const k = getClass(a[i]);
+    buckets[k]++;
     yield { array: a.slice(), highlights: [i] };
   }
-  
-  // Calculate starting position of each bucket
+
+  // Step 4: Accumulate counts
   for (let i = 1; i < m; i++) {
     buckets[i] += buckets[i - 1];
   }
-  
-  // Move elements to their expected positions (first permutation)
-  let move = 0;
-  let j = 0;
-  let k = m - 1;
-  
-  while (move < n - 1) {
-    while (j > buckets[k] - 1) {
-      j++;
-      k = Math.floor((m - 1) * (a[j] - min) / (max - min));
+
+  // Step 5: Permute elements to roughly correct bucket areas
+  let count = 0;
+  let i = 0;
+
+  while (count < n) {
+    let k = getClass(a[i]);
+    while (i >= buckets[k]) {
+      i++;
+      k = getClass(a[i]);
     }
-    
-    const flashElement = a[j];
-    
-    while (j !== buckets[k] - 1) {
-      k = Math.floor((m - 1) * (flashElement - min) / (max - min));
-      const location = --buckets[k];
-      [a[j], a[location]] = [a[location], flashElement];
-      yield { array: a.slice(), highlights: [j, location] };
-      move++;
+
+    let flash = a[i];
+    while (i !== buckets[k]) {
+      k = getClass(flash);
+      const dst = --buckets[k];
+      const tmp = a[dst];
+      a[dst] = flash;
+      flash = tmp;
+      count++;
+      yield { array: a.slice(), highlights: [i, dst] };
     }
   }
-  
-  // Insertion sort to finalize
+
+  // Step 6: Final pass — insertion sort
   for (let i = 1; i < n; i++) {
-    const temp = a[i];
+    const key = a[i];
     let j = i - 1;
-    
-    while (j >= 0 && a[j] > temp) {
+    while (j >= 0 && a[j] > key) {
       a[j + 1] = a[j];
       j--;
       yield { array: a.slice(), highlights: [j + 1, i] };
     }
-    
-    a[j + 1] = temp;
+    a[j + 1] = key;
     yield { array: a.slice(), highlights: [j + 1] };
   }
 }

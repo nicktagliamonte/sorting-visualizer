@@ -2,6 +2,8 @@ import { drawBars } from "./utils/drawBars.js";
 import { bubbleSort } from "./algorithms/bubbleSort.js";
 import { selectionSort } from "./algorithms/selectionSort.js";
 import { flashSort } from "./algorithms/flashSort.js";
+import { cocktailShakerSort } from "./algorithms/cocktailShakerSort.js";
+import { insertionSort } from "./algorithms/insertionSort.js";
 
 let array = [];
 let iterator = null;
@@ -40,6 +42,8 @@ const algorithms = {
   bubbleSort,
   selectionSort,
   flashSort,
+  cocktailShakerSort,
+  insertionSort,
 };
 
 function getAlgorithmFunction() {

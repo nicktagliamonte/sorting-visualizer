@@ -1,10 +1,6 @@
 Phase 2: algorithm integration
 goal: add sorting algorithms as generator functions that yield after each step
-    ✅ Start With:
-    Insertion Sort
-
     🧠 Add Educational:
-    Cocktail Shaker Sort
     Comb Sort
     Gnome Sort
     Odd-Even Sort
@@ -29,7 +25,6 @@ goal: add sorting algorithms as generator functions that yield after each step
     Bucket Sort
     Bitonic Merge Sort
     Patience Sort
-    Flash Sort
 
 Phase 3: styling and polish
 goal: self explainatory
