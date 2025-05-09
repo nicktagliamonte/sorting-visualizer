@@ -1,8 +1,6 @@
 Phase 2: algorithm integration
 goal: add sorting algorithms as generator functions that yield after each step
     🧠 Add Educational:
-    Comb Sort
-    Gnome Sort
     Odd-Even Sort
     Bitonic Sort
     TimSort (tricky but optional last)
@@ -23,8 +21,6 @@ goal: add sorting algorithms as generator functions that yield after each step
     Radix Sort
     Counting Sort
     Bucket Sort
-    Bitonic Merge Sort
-    Patience Sort
 
 Phase 3: styling and polish
 goal: self explainatory

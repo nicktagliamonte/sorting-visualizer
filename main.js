@@ -4,6 +4,10 @@ import { selectionSort } from "./algorithms/selectionSort.js";
 import { flashSort } from "./algorithms/flashSort.js";
 import { cocktailShakerSort } from "./algorithms/cocktailShakerSort.js";
 import { insertionSort } from "./algorithms/insertionSort.js";
+import { combSort } from "./algorithms/combSort.js";
+import { gnomeSort } from "./algorithms/gnomeSort.js";
+import { bitonicMergeSort } from "./algorithms/bitonicMergeSort.js";
+import { bitonicSort } from "./algorithms/bitonicSort.js";
 
 let array = [];
 let iterator = null;
@@ -34,7 +38,7 @@ const algorithmSizes = {
   countingSort: 256,
   bucketSort: 256,
   bitonicMergeSort: 256,
-  patienceSort: 256,
+  patienceSort: 64,
   flashSort: 256,
 };
 
@@ -44,6 +48,10 @@ const algorithms = {
   flashSort,
   cocktailShakerSort,
   insertionSort,
+  combSort,
+  gnomeSort,
+  bitonicMergeSort,
+  bitonicSort,
 };
 
 function getAlgorithmFunction() {
@@ -64,7 +72,18 @@ function step() {
   if (!iterator) return;
   const { value, done } = iterator.next();
   if (!done && value) {
-    drawBars(value.array, value.highlights);
+    if (typeof value.then === 'function') {
+      // If value is a Promise (for parallel sorts like bitonicMergeSort)
+      value.then((resolved) => {
+        if (resolved && resolved.array) {
+          drawBars(resolved.array, resolved.highlights);
+        }
+        clearInterval(intervalId);
+        intervalId = null;
+      });
+    } else {
+      drawBars(value.array, value.highlights);
+    }
   } else {
     clearInterval(intervalId);
     intervalId = null;

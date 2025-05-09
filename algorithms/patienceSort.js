@@ -24,10 +24,6 @@ export function* patienceSort(arr) {
     } else {
       piles.push([a[i]]);
     }
-    // Only yield at the end of pile building for visualization
-    if (i === n - 1) {
-      yield { array: a.slice(), highlights: [] };
-    }
   }
 
   // Step 3: Reconstruct sorted array by extracting smallest elements from piles
@@ -52,13 +48,11 @@ export function* patienceSort(arr) {
     if (piles[pileIndex].length > 0) {
       heap.insert({ value: piles[pileIndex].pop(), pileIndex });
     }
-    // Yield every 32 steps or at the end
-    if (++stepCount % 1024 === 0 || sortedIndex === n - 1) {
-      yield {
-        array: visualArray.slice(),
-        highlights: [sortedIndex],
-      };
-    }
     sortedIndex++;
   }
+  // Only yield once at the very end
+  yield {
+    array: visualArray.slice(),
+    highlights: [],
+  };
 }
