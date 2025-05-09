@@ -4,10 +4,12 @@ import { selectionSort } from "./algorithms/selectionSort.js";
 import { flashSort } from "./algorithms/flashSort.js";
 import { cocktailShakerSort } from "./algorithms/cocktailShakerSort.js";
 import { insertionSort } from "./algorithms/insertionSort.js";
+import { patienceSort } from "./algorithms/patienceSort.js";
 import { combSort } from "./algorithms/combSort.js";
 import { gnomeSort } from "./algorithms/gnomeSort.js";
 import { bitonicMergeSort } from "./algorithms/bitonicMergeSort.js";
 import { bitonicSort } from "./algorithms/bitonicSort.js";
+import { oddEvenSort } from "./algorithms/oddEvenSort.js";
 
 let array = [];
 let iterator = null;
@@ -38,7 +40,7 @@ const algorithmSizes = {
   countingSort: 256,
   bucketSort: 256,
   bitonicMergeSort: 256,
-  patienceSort: 64,
+  patienceSort: 256,
   flashSort: 256,
 };
 
@@ -48,10 +50,12 @@ const algorithms = {
   flashSort,
   cocktailShakerSort,
   insertionSort,
+  patienceSort,
   combSort,
   gnomeSort,
   bitonicMergeSort,
   bitonicSort,
+  oddEvenSort,
 };
 
 function getAlgorithmFunction() {

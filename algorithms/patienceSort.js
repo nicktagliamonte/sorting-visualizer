@@ -1,58 +1,58 @@
 export function* patienceSort(arr) {
   const a = arr.slice();
   const n = a.length;
-  if (n <= 1) return;
-
-  // Step 1: Setup for Patience Sort
+  
+  // Create piles for sorting (each pile is a sorted stack)
   const piles = [];
-  let stepCount = 0;
-
-  // Step 2: Build piles by binary search insertion
+  
+  // Step 1: Distribution phase - place each card into a pile
   for (let i = 0; i < n; i++) {
-    let left = 0;
-    let right = piles.length - 1;
-    while (left <= right) {
-      const mid = (left + right) >> 1;
-      if (piles[mid][piles[mid].length - 1] < a[i]) {
-        left = mid + 1;
-      } else {
-        right = mid - 1;
+    const card = a[i];
+    
+    // Find the leftmost pile whose top card is greater than the current card
+    let pileIndex = -1;
+    for (let j = 0; j < piles.length; j++) {
+      if (piles[j][piles[j].length - 1] > card) {
+        pileIndex = j;
+        break;
       }
     }
-    if (left < piles.length) {
-      piles[left].push(a[i]);
+    
+    // If no suitable pile found, create a new one
+    if (pileIndex === -1) {
+      piles.push([card]);
     } else {
-      piles.push([a[i]]);
+      // Place the card on this pile
+      piles[pileIndex].push(card);
     }
+    
+    // Visualize current state after each card placement
+    yield { array: a.slice(), highlights: [i] };
   }
-
-  // Step 3: Reconstruct sorted array by extracting smallest elements from piles
-  let result = [];
+  
+  // Step 2: Collection phase - merge the piles into the final sorted array
   let sortedIndex = 0;
-  const heap = new MinHeap();
-  // Insert first element of each pile into the heap
-  for (let i = 0; i < piles.length; i++) {
-    if (piles[i].length > 0) {
-      heap.insert({ value: piles[i].pop(), pileIndex: i });
+  
+  while (piles.some(pile => pile.length > 0)) {
+    // Find the pile with the smallest top card
+    let minPileIndex = -1;
+    let minValue = Infinity;
+    
+    for (let i = 0; i < piles.length; i++) {
+      if (piles[i].length > 0 && piles[i][piles[i].length - 1] < minValue) {
+        minPileIndex = i;
+        minValue = piles[i][piles[i].length - 1];
+      }
+    }
+    
+    if (minPileIndex !== -1) {
+      // Take the smallest card and add it to the result
+      a[sortedIndex] = piles[minPileIndex].pop();
+      yield { array: a.slice(), highlights: [sortedIndex] };
+      sortedIndex++;
     }
   }
-
-  // Prepare a visualization array to update in place
-  const visualArray = new Array(n);
-
-  // Step 4: Build the sorted result array by extracting from the heap
-  while (heap.size() > 0) {
-    const { value, pileIndex } = heap.extractMin();
-    visualArray[sortedIndex] = value;
-    result.push(value);
-    if (piles[pileIndex].length > 0) {
-      heap.insert({ value: piles[pileIndex].pop(), pileIndex });
-    }
-    sortedIndex++;
-  }
-  // Only yield once at the very end
-  yield {
-    array: visualArray.slice(),
-    highlights: [],
-  };
+  
+  // Final state
+  yield { array: a.slice(), highlights: [] };
 }

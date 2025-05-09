@@ -1,35 +1,39 @@
-function* bitonicSort(arr) {
-  const n = arr.length;
-  let currentSize = 2; // Start by sorting bitonic sequences of size 2
-
-  // The outer loop controls the sequence size (2, 4, 8, 16, ...)
-  while (currentSize <= n) {
-    for (let start = 0; start < n; start += currentSize) {
-      // For each sequence of the current size, do bitonic merge
-      yield* bitonicMerge(arr, start, currentSize);
+export function* bitonicSort(arr) {
+  // Make a copy of the array to avoid modifying the original
+  const workingArray = [...arr];
+  const n = workingArray.length;
+  
+  // Initial state
+  yield { array: [...workingArray], highlights: [] };
+  
+  // Do nothing for empty or single-element arrays
+  if (n <= 1) return workingArray;
+  
+  // Simple iterative approach
+  for (let k = 2; k <= n; k *= 2) {
+    for (let j = k/2; j > 0; j /= 2) {
+      for (let i = 0; i < n; i++) {
+        const l = i ^ j;
+        
+        // Only compare if l > i and l is within array bounds
+        if (l > i && l < n) {
+          // Determine sort direction based on position
+          const isAscending = ((i & k) === 0);
+          
+          // Compare and swap if needed
+          if ((workingArray[i] > workingArray[l]) === isAscending) {
+            // Swap elements
+            [workingArray[i], workingArray[l]] = [workingArray[l], workingArray[i]];
+            
+            // Yield with proper object structure and highlights
+            yield { array: [...workingArray], highlights: [i, l] };
+          }
+        }
+      }
     }
-    currentSize *= 2; // Double the size of the bitonic subsequences
   }
-
-  // Final result: the array is sorted
-  return arr;
-}
-
-// Function for bitonic merge (part of the bitonic sort)
-function* bitonicMerge(arr, start, size) {
-  const mid = Math.floor(size / 2);
-
-  // Compare and swap within the bitonic subsequence
-  for (let i = start; i < start + mid; i++) {
-    if (arr[i] > arr[i + mid]) {
-      [arr[i], arr[i + mid]] = [arr[i + mid], arr[i]]; // Swap if out of order
-    }
-    yield arr; // Yield after each comparison and swap
-  }
-
-  // Recursively merge smaller subarrays
-  if (mid > 1) {
-    yield* bitonicMerge(arr, start, mid); // Merge the first half
-    yield* bitonicMerge(arr, start + mid, mid); // Merge the second half
-  }
+  
+  // Final state
+  yield { array: [...workingArray], highlights: [] };
+  return workingArray;
 }
