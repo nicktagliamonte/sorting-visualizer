@@ -1,28 +1,7 @@
-Phase 2: algorithm integration
-goal: add sorting algorithms as generator functions that yield after each step
-    🧠 Add Educational:
-    TimSort (tricky but optional last)
-
-    😂 Add Joke Sorts (as async or mock animations):
-    Bogo Sort (limit steps)
-    Bozo Sort
-    Stooge Sort
-    Sleep Sort (use setTimeout)
-    Pancake Sort
-    Spaghetti Sort (fake with animation delay)
-
-    🚀 Add Advanced:
-    Merge Sort
-    Quick Sort
-    Heap Sort
-    Shell Sort
-    Radix Sort
-    Counting Sort
-    Bucket Sort
-
 Phase 3: styling and polish
 goal: self explainatory
     highlicht currently compared/swapped bars
     add colors for active, sorted, etc
     make responsive layout
     have it do a final check that everything is sorted and if yes, take the app out of 'playing' status
+    reorganize things so that the joke sorts are at the bottom of the list and maybe display in red

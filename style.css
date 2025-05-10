@@ -24,3 +24,54 @@ body {
   background-color: steelblue;
   transition: height 0.1s, background-color 0.1s;
 }
+
+#algorithmInfo {
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+#algorithmInfo.warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
+
+/* Add styling for algorithm groups in dropdown */
+optgroup {
+  font-weight: bold;
+}
+
+optgroup[label="Joke Sorts"] {
+  color: #c62828;
+}
+
+.joke-sort {
+  color: #c62828;
+  font-style: italic;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  #bars {
+    height: 200px;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  #controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+  }
+  
+  #controls > * {
+    margin: 5px;
+  }
+}
