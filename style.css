@@ -2,9 +2,12 @@
    Base Styles
    ========================================================================== */
 body {
-  font-family: sans-serif;
+  font-family: monospace;
   text-align: center;
   padding: 1rem;
+  background-color: #ffffff; /* Default light mode background */
+  color: #333333; /* Default light mode text color */
+  transition: background-color 0.3s, color 0.3s; /* Smooth transitions */
 }
 
 /* ==========================================================================
@@ -12,6 +15,49 @@ body {
    ========================================================================== */
 #controls {
   margin-bottom: 1rem;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #3498db;
+  color: #ffffff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background-color: #2980b9;
+  transform: scale(1.05);
+}
+
+button:active {
+  background-color: #1c5980;
+  transform: scale(0.95);
+}
+
+/* Speed slider styling */
+#speedSliderContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+#speedSlider {
+  margin: 0;
+  position: relative;
+  top: 4px;
+}
+
+#speedSliderLabel {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  position: relative;
+  top: -4px;
 }
 
 /* ==========================================================================
@@ -25,6 +71,8 @@ body {
   border: 1px solid #ccc;
   margin: auto;
   max-width: 90vw;
+  background-color: #f9f9f9; /* Light mode background for bars */
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .bar {
@@ -54,6 +102,8 @@ body {
   background-color: #f0f0f0;
   font-size: 0.9rem;
   text-align: center;
+  border: 1px solid #ccc;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 #algorithmInfo.warning {
@@ -108,6 +158,7 @@ optgroup[label="Joke Sorts"] {
   font-weight: bold;
   text-align: center;
   max-width: 300px;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 #sortingResult.success {
@@ -120,6 +171,64 @@ optgroup[label="Joke Sorts"] {
   background-color: #f8d7da;
   color: #721c24;
   border: 1px solid #f5c6cb;
+}
+
+/* ==========================================================================
+   Dark Mode Styles
+   ========================================================================== */
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+body.dark-mode #bars {
+  background-color: #1e1e1e;
+  border-color: #444;
+}
+
+body.dark-mode .bar {
+  background-color: #1e88e5; /* Slightly darker blue for inactive bars */
+}
+
+body.dark-mode .bar.active {
+  background-color: #ff9800; /* Bright orange for active elements */
+  border-top-color: #e65100; /* Darker orange for depth */
+}
+
+body.dark-mode .bar.comparison {
+  background-color: #43a047; /* Bright green for comparison elements */
+  border-top-color: #2e7d32; /* Darker green for depth */
+}
+
+body.dark-mode #algorithmInfo {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border-color: #333;
+}
+
+body.dark-mode #sortingResult.success {
+  background-color: #2e7d32;
+  color: #ffffff;
+  border-color: #1b5e20;
+}
+
+body.dark-mode #sortingResult.error {
+  background-color: #b71c1c;
+  color: #ffffff;
+  border-color: #7f0000;
+}
+
+button.dark-mode {
+  background-color: #424242;
+  color: #ffffff;
+}
+
+button.dark-mode:hover {
+  background-color: #616161;
+}
+
+button.dark-mode:active {
+  background-color: #212121;
 }
 
 /* ==========================================================================

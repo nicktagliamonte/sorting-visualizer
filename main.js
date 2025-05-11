@@ -162,6 +162,24 @@ let sortingComplete = false;
 let sortingSuccessful = false;
 let isVerifying = false; // Flag to prevent array reset during verification
 
+// Function to get query parameters from the URL
+function getQueryParams() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    mode: params.get("mode") || "light", // Default to light mode
+  };
+}
+
+// Apply the mode based on the query parameter
+function applyMode(mode) {
+  const body = document.body;
+  if (mode === "dark") {
+    body.classList.add("dark-mode");
+  } else {
+    body.classList.remove("dark-mode");
+  }
+}
+
 // Initialize with the default algorithm
 async function initializeAlgorithms() {
   // Load the default algorithm initially
@@ -372,6 +390,9 @@ function getCurrentSpeed() {
 
 // Event listeners
 document.addEventListener("DOMContentLoaded", async () => {
+  const { mode } = getQueryParams();
+  applyMode(mode);
+
   await initializeAlgorithms();
   resetArray();
   
