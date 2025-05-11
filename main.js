@@ -269,10 +269,7 @@ function* verifySorting(arr) {
   // Make a copy of the array to avoid any changes to the original
   const arrToVerify = [...arr];
   
-  for (let i = 0; i < arrToVerify.length - 1; i++) {
-    // Highlight current and next elements being checked
-    yield { array: arrToVerify, highlights: [i + 1], active: i };
-    
+  for (let i = 0; i < arrToVerify.length - 1; i++) {    
     // If out of order, we've found a failure
     if (arrToVerify[i] > arrToVerify[i+1]) {
       // Mark the failure point

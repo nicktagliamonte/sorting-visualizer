@@ -9,7 +9,6 @@ export function* flashSort(arr) {
     max = a[0],
     maxIndex = 0;
   for (let i = 1; i < n; i++) {
-    // Mark current element as active during search
     if (a[i] < min) min = a[i];
     if (a[i] > max) {
       max = a[i];
@@ -31,7 +30,6 @@ export function* flashSort(arr) {
   for (let i = 0; i < n; i++) {
     const k = getClass(a[i]);
     buckets[k]++;
-    // Mark current element as active
     yield { array: a.slice(), active: i };
   }
 
@@ -66,23 +64,25 @@ export function* flashSort(arr) {
   }
 
   // Step 6: Final pass — insertion sort
+  // REMOVE STEP-BY-STEP VISUALIZATION - Only show periodic updates
+  let lastUpdate = 0;
   for (let i = 1; i < n; i++) {
     const key = a[i];
     let j = i - 1;
     
-    // Mark current key as active
-    yield { array: a.slice(), highlights: [], active: i };
-    
     while (j >= 0 && a[j] > key) {
       a[j + 1] = a[j];
-      // Mark position being compared as highlight
-      yield { array: a.slice(), highlights: [j], active: i };
       j--;
     }
     a[j + 1] = key;
-    yield { array: a.slice(), highlights: [j + 1], active: i };
+    
+    // Only yield occasionally during insertion sort to speed up final phase
+    if (i - lastUpdate > n/10) { // Update roughly 10 times, not for each element
+      yield { array: a.slice(), highlights: [], active: i };
+      lastUpdate = i;
+    }
   }
   
-  // Final state
+  // Final state - just once at the end
   yield { array: a.slice(), highlights: [] };
 }
