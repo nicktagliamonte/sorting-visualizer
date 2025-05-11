@@ -5,7 +5,7 @@ body {
   font-family: monospace;
   text-align: center;
   padding: 1rem;
-  background-color: #ffffff; /* Default light mode background */
+  background-color: #f0f0f0; /* Default light mode background */
   color: #333333; /* Default light mode text color */
   transition: background-color 0.3s, color 0.3s; /* Smooth transitions */
 }
