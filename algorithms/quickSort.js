@@ -21,7 +21,7 @@ function* quickSortHelper(arr, low, high) {
     const pivotIndex = yield* partition(arr, low, high);
     
     // Highlight the pivot in its final position
-    yield { array: arr.slice(), highlights: [pivotIndex] };
+    yield { array: arr.slice(), highlights: [], active: pivotIndex };
     
     // Recursively sort the sub-arrays
     yield* quickSortHelper(arr, low, pivotIndex - 1);
@@ -34,14 +34,14 @@ function* partition(arr, low, high) {
   const pivot = arr[high];
   
   // Highlight the pivot
-  yield { array: arr.slice(), highlights: [high] };
+  yield { array: arr.slice(), highlights: [], active: high };
   
   // Index of smaller element
   let i = low - 1;
   
   for (let j = low; j < high; j++) {
     // Highlight current element being compared with pivot
-    yield { array: arr.slice(), highlights: [j, high] };
+    yield { array: arr.slice(), highlights: [j], active: high };
     
     // If current element is smaller than the pivot
     if (arr[j] < pivot) {
@@ -51,7 +51,7 @@ function* partition(arr, low, high) {
       [arr[i], arr[j]] = [arr[j], arr[i]];
       
       // Visualize the swap
-      yield { array: arr.slice(), highlights: [i, j] };
+      yield { array: arr.slice(), highlights: [j], active: i };
     }
   }
   
@@ -59,7 +59,7 @@ function* partition(arr, low, high) {
   [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
   
   // Visualize the final pivot placement
-  yield { array: arr.slice(), highlights: [i + 1, high] };
+  yield { array: arr.slice(), highlights: [high], active: i + 1 };
   
   return i + 1; // Return the pivot index
 }

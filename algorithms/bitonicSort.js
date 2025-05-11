@@ -25,8 +25,11 @@ export function* bitonicSort(arr) {
             // Swap elements
             [workingArray[i], workingArray[l]] = [workingArray[l], workingArray[i]];
             
-            // Yield with proper object structure and highlights
-            yield { array: [...workingArray], highlights: [i, l] };
+            // Mark i as active and l as comparison element
+            yield { array: [...workingArray], highlights: [l], active: i };
+          } else {
+            // Even when no swap happens, still show the comparison
+            yield { array: [...workingArray], highlights: [l], active: i };
           }
         }
       }

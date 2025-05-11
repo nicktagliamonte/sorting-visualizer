@@ -15,6 +15,13 @@ export function* timSort(arr) {
     // Calculate end of run (either MIN_RUN or end of array)
     const end = Math.min(start + MIN_RUN - 1, n - 1);
     
+    // Highlight the current run
+    const runHighlights = [];
+    for (let i = start + 1; i <= end; i++) {
+      runHighlights.push(i);
+    }
+    yield { array: a.slice(), highlights: runHighlights, active: start };
+    
     // Insertion sort for this run
     yield* insertionSortRun(a, start, end);
   }
@@ -28,6 +35,21 @@ export function* timSort(arr) {
       const mid = Math.min(left + size - 1, n - 1);
       const right = Math.min(left + size * 2 - 1, n - 1);
       
+      // Highlight the subarrays being merged
+      const leftHighlights = [];
+      const rightHighlights = [];
+      
+      for (let i = left; i <= mid; i++) {
+        leftHighlights.push(i);
+      }
+      
+      for (let i = mid + 1; i <= right; i++) {
+        rightHighlights.push(i);
+      }
+      
+      // Show both subarrays with the midpoint as active
+      yield { array: a.slice(), highlights: [...leftHighlights, ...rightHighlights], active: mid };
+      
       // Merge subarrays from left to mid and mid+1 to right
       if (mid < right) {
         yield* merge(a, left, mid, right);
@@ -37,6 +59,7 @@ export function* timSort(arr) {
   
   // Final state
   yield { array: a.slice(), highlights: [] };
+  
   return a;
 }
 
@@ -46,17 +69,20 @@ function* insertionSortRun(a, start, end) {
     const key = a[i];
     let j = i - 1;
     
+    // Mark key as active
+    yield { array: a.slice(), highlights: [], active: i };
+    
     // Move elements greater than key to one position ahead
     while (j >= start && a[j] > key) {
       a[j + 1] = a[j];
-      // Highlight the position being changed
-      yield { array: a.slice(), highlights: [j, j + 1] };
+      // Highlight the position being changed, key position as active
+      yield { array: a.slice(), highlights: [j], active: i };
       j--;
     }
     
     a[j + 1] = key;
     // Highlight the position where the key is inserted
-    yield { array: a.slice(), highlights: [j + 1] };
+    yield { array: a.slice(), highlights: [], active: j + 1 };
   }
 }
 
@@ -82,6 +108,9 @@ function* merge(a, left, mid, right) {
   let i = 0, j = 0, k = left;
   
   while (i < n1 && j < n2) {
+    // Highlight elements being compared
+    yield { array: a.slice(), highlights: [left + i, mid + 1 + j], active: k };
+    
     if (leftArray[i] <= rightArray[j]) {
       a[k] = leftArray[i];
       i++;
@@ -89,15 +118,16 @@ function* merge(a, left, mid, right) {
       a[k] = rightArray[j];
       j++;
     }
+    
     // Highlight the current position being filled
-    yield { array: a.slice(), highlights: [k] };
+    yield { array: a.slice(), highlights: [], active: k };
     k++;
   }
   
   // Copy remaining elements of leftArray (if any)
   while (i < n1) {
     a[k] = leftArray[i];
-    yield { array: a.slice(), highlights: [k] };
+    yield { array: a.slice(), highlights: [], active: k };
     i++;
     k++;
   }
@@ -105,7 +135,7 @@ function* merge(a, left, mid, right) {
   // Copy remaining elements of rightArray (if any)
   while (j < n2) {
     a[k] = rightArray[j];
-    yield { array: a.slice(), highlights: [k] };
+    yield { array: a.slice(), highlights: [], active: k };
     j++;
     k++;
   }

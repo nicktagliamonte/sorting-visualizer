@@ -16,22 +16,28 @@ export function* bogoSort(arr) {
     shuffle(a);
     shuffleCount++;
     
-    // Yield the new state with all elements highlighted
-    const allIndices = Array.from({ length: n }, (_, i) => i);
-    yield { array: a.slice(), highlights: allIndices };
+    // Select a random element as active, the rest as highlights
+    const activeIndex = Math.floor(Math.random() * n);
+    const highlights = [];
+    for (let i = 0; i < n; i++) {
+      if (i !== activeIndex) highlights.push(i);
+    }
+    
+    // Yield the new state with random active element to visualize the chaos
+    yield { array: a.slice(), highlights, active: activeIndex };
     
     // If we're about to hit the limit, add a message in the array
     if (shuffleCount === MAX_SHUFFLES - 1) {
       // Signal that we're giving up by making all values the same
       const message = Array(n).fill(50); // A visible but neutral height
-      yield { array: message, highlights: allIndices };
+      yield { array: message, highlights, active: activeIndex };
       
       // Then restore the last shuffled state
       yield { array: a.slice(), highlights: [] };
     }
   }
   
-  // Final state (either sorted or the last shuffle) - no highlights
+  // Final state - no highlights
   yield { array: a.slice(), highlights: [] };
   
   return a;

@@ -4,16 +4,20 @@ export function* cocktailShakerSort(arr) {
   let end = a.length - 1;
   let swapped = true;
 
+  // Initial state
+  yield { array: a.slice(), highlights: [] };
+
   while (swapped) {
     swapped = false;
 
     // Forward pass
     for (let i = start; i < end; i++) {
+      // Mark current position as active and next position as comparison
       if (a[i] > a[i + 1]) {
         [a[i], a[i + 1]] = [a[i + 1], a[i]];
         swapped = true;
-        yield { array: a.slice(), highlights: [i, i + 1] };
       }
+      yield { array: a.slice(), highlights: [i + 1], active: i };
     }
 
     if (!swapped) break;
@@ -22,15 +26,17 @@ export function* cocktailShakerSort(arr) {
 
     // Backward pass
     for (let i = end - 1; i >= start; i--) {
+      // Mark current position as active and next position as comparison
       if (a[i] > a[i + 1]) {
         [a[i], a[i + 1]] = [a[i + 1], a[i]];
         swapped = true;
-        yield { array: a.slice(), highlights: [i, i + 1] };
       }
+      yield { array: a.slice(), highlights: [i + 1], active: i };
     }
 
     start++;
   }
 
-  yield { array: a.slice(), highlights: [] }; // final state
+  // Final state
+  yield { array: a.slice(), highlights: [] };
 }

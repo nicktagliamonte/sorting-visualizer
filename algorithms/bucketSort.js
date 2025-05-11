@@ -12,6 +12,9 @@ export function* bucketSort(arr) {
   for (let i = 1; i < n; i++) {
     if (a[i] < minValue) minValue = a[i];
     if (a[i] > maxValue) maxValue = a[i];
+    
+    // Highlight current element being examined for min/max
+    yield { array: a.slice(), highlights: [], active: i };
   }
   
   // Create buckets
@@ -29,14 +32,19 @@ export function* bucketSort(arr) {
     
     buckets[bucketIndex].push(a[i]);
     
-    // Visualize element being placed into a bucket
-    // (create a temporary array where elements go to their "bucket position")
+    // Mark current element as active while being placed into bucket
     const tempArr = new Array(n).fill(null);
     let position = 0;
+    
+    // Highlight all elements in the bucket where current element is being placed
+    const highlights = [];
     
     for (let j = 0; j < bucketCount; j++) {
       for (let k = 0; k < buckets[j].length; k++) {
         tempArr[position] = buckets[j][k];
+        if (j === bucketIndex) {
+          highlights.push(position);
+        }
         position++;
       }
       // Leave some visual separation between buckets
@@ -49,7 +57,7 @@ export function* bucketSort(arr) {
       position++;
     }
     
-    yield { array: tempArr, highlights: [i] };
+    yield { array: tempArr, highlights: highlights, active: i };
   }
   
   // Sort each bucket (using insertion sort)
@@ -77,19 +85,17 @@ export function* bucketSort(arr) {
           position = Math.min(position + 1, n - 1);
         }
         
-        // Highlight the bucket being sorted
-        const highlights = [];
-        position = 0;
-        
+        // Calculate positions for visualization
+        let bucketStartPos = 0;
         for (let k = 0; k < b; k++) {
-          position += buckets[k].length + 1;
+          bucketStartPos += buckets[k].length + 1;
         }
         
-        for (let m = 0; m < buckets[b].length; m++) {
-          highlights.push(position + m);
-        }
+        // Highlight the element being compared and mark the key as active
+        const keyPos = bucketStartPos + i;
+        const comparePos = bucketStartPos + j + 1;
         
-        yield { array: tempArr, highlights };
+        yield { array: tempArr, highlights: [comparePos], active: keyPos };
       }
       
       bucket[j + 1] = key;
@@ -102,8 +108,8 @@ export function* bucketSort(arr) {
     for (let i = 0; i < buckets[b].length; i++) {
       a[index] = buckets[b][i];
       
-      // Visualize recombining elements
-      yield { array: a.slice(), highlights: [index] };
+      // Mark current element as active when being placed back into final array
+      yield { array: a.slice(), highlights: [], active: index };
       
       index++;
     }

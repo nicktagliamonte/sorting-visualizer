@@ -19,11 +19,16 @@ export function* spaghettiSort(arr) {
     let maxIndices = [];
     
     for (let i = 0; i < n; i++) {
-      if (!pickedUp[i] && a[i] > maxHeight) {
-        maxHeight = a[i];
-        maxIndices = [i];
-      } else if (!pickedUp[i] && a[i] === maxHeight) {
-        maxIndices.push(i);
+      if (!pickedUp[i]) {
+        // Highlight current element being checked
+        yield { array: a.slice(), highlights: [], active: i };
+        
+        if (a[i] > maxHeight) {
+          maxHeight = a[i];
+          maxIndices = [i];
+        } else if (a[i] === maxHeight) {
+          maxIndices.push(i);
+        }
       }
     }
     
@@ -40,11 +45,11 @@ export function* spaghettiSort(arr) {
         }
       }
       
-      // Add the "hand" as horizontal line
+      // Add the "hand" as horizontal line - mark as active the positions with max height
       yield { 
         array: handVisualization, 
         highlights: handHighlights,
-        handHeight: height // Custom property for hand visualization
+        active: maxIndices[0] // Mark the first max element as active
       };
     }
     
@@ -69,7 +74,7 @@ export function* spaghettiSort(arr) {
         }
       }
       
-      yield { array: visualArray, highlights: [n - sorted.length] };
+      yield { array: visualArray, highlights: [], active: n - sorted.length };
     }
   }
   

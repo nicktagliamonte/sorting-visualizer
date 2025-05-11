@@ -12,7 +12,7 @@ export function* countingSort(arr) {
   for (let i = 1; i < n; i++) {
     if (a[i] < min) min = a[i];
     if (a[i] > max) max = a[i];
-    yield { array: a.slice(), highlights: [i] };
+    yield { array: a.slice(), highlights: [], active: i };
   }
   
   // Create and populate the counts array
@@ -37,7 +37,7 @@ export function* countingSort(arr) {
       countVisualization.push(0);
     }
     
-    yield { array: countVisualization, highlights: [i] };
+    yield { array: countVisualization, highlights: [], active: i };
   }
   
   // Build the sorted array
@@ -55,7 +55,15 @@ export function* countingSort(arr) {
         placementVisualization[k] = sorted[k];
       }
       
-      yield { array: placementVisualization, highlights: [pos] };
+      // Highlight all elements with the current value being placed
+      const highlights = [];
+      for (let k = 0; k < pos; k++) {
+        if (sorted[k] === sorted[pos]) {
+          highlights.push(k);
+        }
+      }
+      
+      yield { array: placementVisualization, highlights: highlights, active: pos };
       pos++;
     }
   }

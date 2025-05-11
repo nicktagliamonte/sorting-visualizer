@@ -20,18 +20,20 @@ function* mergeSortHelper(arr, left, right) {
     // Find the middle point
     const mid = Math.floor((left + right) / 2);
     
-    // Visualize the division
-    const divisionHighlights = [];
-    for (let i = left; i <= mid; i++) divisionHighlights.push(i);
-    yield { array: arr.slice(), highlights: divisionHighlights };
+    // Visualize the division with active element at the midpoint
+    const leftHighlights = [];
+    for (let i = left; i < mid; i++) leftHighlights.push(i);
+    yield { array: arr.slice(), highlights: leftHighlights, active: mid };
     
-    // Sort first and second halves
+    // Sort first half
     yield* mergeSortHelper(arr, left, mid);
     
-    const secondHalfHighlights = [];
-    for (let i = mid + 1; i <= right; i++) secondHalfHighlights.push(i);
-    yield { array: arr.slice(), highlights: secondHalfHighlights };
+    // Visualize second half with active element at the midpoint
+    const rightHighlights = [];
+    for (let i = mid + 1; i <= right; i++) rightHighlights.push(i);
+    yield { array: arr.slice(), highlights: rightHighlights, active: mid };
     
+    // Sort second half
     yield* mergeSortHelper(arr, mid + 1, right);
     
     // Merge the sorted halves
@@ -55,20 +57,14 @@ function* merge(arr, left, mid, right) {
     rightArray[i] = arr[mid + 1 + i];
   }
   
-  // Highlight the subarrays being merged
-  const mergeHighlights = [];
-  for (let i = left; i <= right; i++) mergeHighlights.push(i);
-  yield { array: arr.slice(), highlights: mergeHighlights };
-  
   // Merge the temporary arrays back into arr[left...right]
   let i = 0;  // Initial index of first subarray
   let j = 0;  // Initial index of second subarray
   let k = left;  // Initial index of merged subarray
   
   while (i < leftSize && j < rightSize) {
-    // Compare elements from both arrays
-    const compareHighlights = [left + i, mid + 1 + j];
-    yield { array: arr.slice(), highlights: compareHighlights };
+    // Compare elements from both arrays - highlight both elements being compared
+    yield { array: arr.slice(), highlights: [left + i, mid + 1 + j], active: k };
     
     if (leftArray[i] <= rightArray[j]) {
       arr[k] = leftArray[i];
@@ -78,18 +74,16 @@ function* merge(arr, left, mid, right) {
       j++;
     }
     
-    // Highlight the position where element is placed
-    yield { array: arr.slice(), highlights: [k] };
+    // Highlight the position where element was placed as active
+    yield { array: arr.slice(), highlights: [], active: k };
     k++;
   }
   
   // Copy the remaining elements of leftArray, if any
   while (i < leftSize) {
     arr[k] = leftArray[i];
-    
-    // Highlight the element being placed
-    yield { array: arr.slice(), highlights: [k] };
-    
+    // Highlight position being filled
+    yield { array: arr.slice(), highlights: [], active: k };
     i++;
     k++;
   }
@@ -97,16 +91,9 @@ function* merge(arr, left, mid, right) {
   // Copy the remaining elements of rightArray, if any
   while (j < rightSize) {
     arr[k] = rightArray[j];
-    
-    // Highlight the element being placed
-    yield { array: arr.slice(), highlights: [k] };
-    
+    // Highlight position being filled
+    yield { array: arr.slice(), highlights: [], active: k };
     j++;
     k++;
   }
-  
-  // Show the fully merged subarray
-  const resultHighlights = [];
-  for (let i = left; i <= right; i++) resultHighlights.push(i);
-  yield { array: arr.slice(), highlights: resultHighlights };
 }

@@ -154,9 +154,13 @@ const algorithmConfig = {
 // Load all algorithms using dynamic imports
 let algorithms = {};
 let array = [];
+let sortedArray = []; // Store the final sorted array for verification
 let iterator = null;
 let intervalId = null;
 let selectedAlgorithm = "bubbleSort";
+let sortingComplete = false;
+let sortingSuccessful = false;
+let isVerifying = false; // Flag to prevent array reset during verification
 
 // Initialize with the default algorithm
 async function initializeAlgorithms() {
@@ -167,10 +171,22 @@ async function initializeAlgorithms() {
   // Load other algorithms on demand when selected
   const algorithmSelect = document.getElementById("algorithmSelect");
   
-  // Sort algorithms by type - regular sorts first, then joke sorts
+  // Get regular sorts, ensuring bubbleSort is first
   const regularSorts = Object.keys(algorithmConfig)
-    .filter(key => algorithmConfig[key].type === "regular")
-    .sort();
+    .filter(key => algorithmConfig[key].type === "regular");
+  
+  // Move bubbleSort to the front of the array
+  if (regularSorts.includes("bubbleSort")) {
+    // Remove bubbleSort from its current position
+    regularSorts.splice(regularSorts.indexOf("bubbleSort"), 1);
+    // Add it to the beginning
+    regularSorts.unshift("bubbleSort");
+  }
+  
+  // Sort the remaining regular sorts (everything after bubbleSort)
+  const sortedRegularSorts = ["bubbleSort", 
+    ...regularSorts.filter(sort => sort !== "bubbleSort").sort()
+  ];
     
   const jokeSorts = Object.keys(algorithmConfig)
     .filter(key => algorithmConfig[key].type === "joke")
@@ -182,7 +198,7 @@ async function initializeAlgorithms() {
   // Add regular sorts
   const regularGroup = document.createElement("optgroup");
   regularGroup.label = "Regular Sorts";
-  regularSorts.forEach(algo => {
+  sortedRegularSorts.forEach(algo => {
     const option = document.createElement("option");
     option.value = algo;
     option.textContent = toTitleCase(algo);
@@ -225,40 +241,136 @@ async function getAlgorithmFunction() {
 }
 
 function resetArray(size) {
+  // Don't reset if we're in the middle of verification
+  if (isVerifying) return;
+  
   const arrSize = size || algorithmConfig[selectedAlgorithm]?.size || 50;
   array = Array.from(
     { length: arrSize },
     () => Math.floor(Math.random() * 100) + 10
   );
+  sortedArray = []; // Clear the sorted array
   drawBars(array);
   iterator = null;
+}
+
+// Helper function to check if array is sorted
+function isSorted(arr) {
+  for (let i = 0; i < arr.length - 1; i++) {
+    if (arr[i] > arr[i+1]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Function to verify sorting with visualization
+function* verifySorting(arr) {
+  // Make a copy of the array to avoid any changes to the original
+  const arrToVerify = [...arr];
+  
+  for (let i = 0; i < arrToVerify.length - 1; i++) {
+    // Highlight current and next elements being checked
+    yield { array: arrToVerify, highlights: [i + 1], active: i };
+    
+    // If out of order, we've found a failure
+    if (arrToVerify[i] > arrToVerify[i+1]) {
+      // Mark the failure point
+      yield { array: arrToVerify, highlights: [i, i+1], active: null };
+      return false;
+    }
+  }
+  
+  // Array is sorted - highlight all elements
+  yield { array: arrToVerify, highlights: Array.from({length: arrToVerify.length}, (_, i) => i) };
+  return true;
 }
 
 async function step() {
   if (!iterator) {
     const sortFunction = await getAlgorithmFunction();
-    iterator = sortFunction(array);
+    iterator = sortFunction([...array]); // Use a copy of the array
   }
   
   const { value, done } = iterator.next();
+  
   if (!done && value) {
     if (typeof value.then === 'function') {
       // If value is a Promise (for parallel sorts)
       value.then((resolved) => {
         if (resolved && resolved.array) {
-          drawBars(resolved.array, resolved.highlights);
+          drawBars(resolved.array, resolved.highlights, resolved.active);
+          
+          // Save the latest state
+          if (resolved.array) {
+            sortedArray = [...resolved.array];
+          }
         }
         clearInterval(intervalId);
         intervalId = null;
       });
     } else {
-      drawBars(value.array, value.highlights);
+      drawBars(value.array, value.highlights, value.active);
+      
+      // Save the latest state
+      if (value.array) {
+        sortedArray = [...value.array];
+      }
     }
   } else {
+    // Algorithm is done, verify the result
     clearInterval(intervalId);
     intervalId = null;
-    document.getElementById("playPauseBtn").textContent = "Play";
+    
+    // Begin verification process
+    if (!sortingComplete && !isVerifying) {
+      sortingComplete = true;
+      isVerifying = true; // Set flag to prevent array reset
+      
+      // Start verification with the final sorted array
+      const verificationIterator = verifySorting(sortedArray);
+      
+      // Run the verification with a slight delay for visualization
+      const verificationInterval = setInterval(() => {
+        const verificationStep = verificationIterator.next();
+        
+        if (!verificationStep.done) {
+          // Show the verification progress
+          const { value } = verificationStep;
+          drawBars(value.array, value.highlights, value.active);
+        } else {
+          // Verification complete
+          clearInterval(verificationInterval);
+          sortingSuccessful = verificationStep.value;
+          isVerifying = false; // Clear verification flag
+          
+          // Update UI based on sorting result
+          document.getElementById("playPauseBtn").textContent = sortingSuccessful ? 
+            "Reset & Play" : "Try Again";
+          
+          // Show success/failure message
+          const resultMessage = document.getElementById("sortingResult");
+          if (resultMessage) {
+            if (sortingSuccessful) {
+              resultMessage.textContent = "Sorting Successful! ✓";
+              resultMessage.className = "success";
+            } else {
+              resultMessage.textContent = "Sorting Failed! ✗";
+              resultMessage.className = "error";
+            }
+            resultMessage.style.display = "block";
+          }
+        }
+      }, 50); // Slower speed for verification for better visibility
+    }
   }
+}
+
+// Function to get current speed from slider
+function getCurrentSpeed() {
+  const speedSlider = document.getElementById("speedSlider");
+  // Invert the slider value to get appropriate delay (low value = fast speed)
+  return 121 - parseInt(speedSlider.value || 90); // Default to 90 if no value
 }
 
 // Event listeners
@@ -288,9 +400,33 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
   
   document.getElementById("playPauseBtn").addEventListener("click", async () => {
+    // Don't respond to clicks during verification
+    if (isVerifying) return;
+    
+    // If sorting is complete, reset first then play again
+    if (sortingComplete) {
+      resetArray();
+      sortingComplete = false;
+      sortingSuccessful = false;
+      // Hide the result message
+      const resultMessage = document.getElementById("sortingResult");
+      if (resultMessage) {
+        resultMessage.style.display = "none";
+      }
+      document.getElementById("playPauseBtn").textContent = "Pause";
+      
+      // Initialize new iterator with the fresh array and start playing
+      const sortFunction = await getAlgorithmFunction();
+      iterator = sortFunction([...array]);
+      
+      // Use current slider value for speed
+      intervalId = setInterval(step, getCurrentSpeed());
+      return;
+    }
+    
     if (!iterator) {
       const sortFunction = await getAlgorithmFunction();
-      iterator = sortFunction(array);
+      iterator = sortFunction([...array]);
     }
     
     if (intervalId) {
@@ -298,7 +434,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       intervalId = null;
       document.getElementById("playPauseBtn").textContent = "Play";
     } else {
-      intervalId = setInterval(step, 10);
+      // Use current slider value for speed
+      intervalId = setInterval(step, getCurrentSpeed());
       document.getElementById("playPauseBtn").textContent = "Pause";
     }
   });
@@ -306,18 +443,30 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("stepBtn").addEventListener("click", step);
   
   document.getElementById("resetBtn").addEventListener("click", () => {
+    // Don't respond to clicks during verification
+    if (isVerifying) return;
+    
     clearInterval(intervalId);
     intervalId = null;
     document.getElementById("playPauseBtn").textContent = "Play";
+    sortingComplete = false;
+    sortingSuccessful = false;
     resetArray();
+    
+    // Hide the result message
+    const resultMessage = document.getElementById("sortingResult");
+    if (resultMessage) {
+      resultMessage.style.display = "none";
+    }
   });
   
   // Speed control
   const speedSlider = document.getElementById("speedSlider");
   speedSlider.addEventListener("input", (e) => {
-    const speed = 121 - parseInt(e.target.value); // Invert the slider value
     if (intervalId) {
       clearInterval(intervalId);
+      // Use current slider value
+      const speed = 121 - parseInt(e.target.value);
       intervalId = setInterval(step, speed);
     }
   });

@@ -33,7 +33,6 @@
         <option value="radixSort">Radix Sort</option>
         <option value="countingSort">Counting Sort</option>
         <option value="bucketSort">Bucket Sort</option>
-        <option value="bitonicMergeSort">Bitonic Merge Sort</option>
         <option value="patienceSort">Patience Sort</option>
         <option value="flashSort">Flash Sort</option>
       </select>
@@ -49,6 +48,25 @@
     </div>
 
     <div id="bars"></div>
+
+    <!-- Add sorting result message -->
+    <div id="sortingResult" style="display: none;"></div>
+
+    <!-- Add the color key beneath the visualization -->
+    <div id="colorKey">
+      <div class="key-item">
+        <div class="key-color bar"></div>
+        <div class="key-label">Inactive Element</div>
+      </div>
+      <div class="key-item">
+        <div class="key-color bar active"></div>
+        <div class="key-label">Active Element</div>
+      </div>
+      <div class="key-item">
+        <div class="key-color bar comparison"></div>
+        <div class="key-label">Comparison Element</div>
+      </div>
+    </div>
 
     <script type="module" src="main.js"></script>
   </body>

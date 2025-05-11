@@ -1,7 +1,0 @@
-Phase 3: styling and polish
-goal: self explainatory
-    highlicht currently compared/swapped bars
-    add colors for active, sorted, etc
-    make responsive layout
-    have it do a final check that everything is sorted and if yes, take the app out of 'playing' status
-    reorganize things so that the joke sorts are at the bottom of the list and maybe display in red

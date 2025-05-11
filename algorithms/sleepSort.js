@@ -11,7 +11,7 @@ export function* sleepSort(arr) {
   
   // Highlight each element being "put to sleep"
   for (let i = 0; i < n; i++) {
-    yield { array: a.slice(), highlights: [i] };
+    yield { array: a.slice(), highlights: [], active: i };
   }
   
   // Track which elements are "sleeping" vs "processed"
@@ -53,8 +53,8 @@ export function* sleepSort(arr) {
           }
         }
         
-        // Highlight the element that just woke up
-        yield { array: currentState, highlights: [sorted.length - 1] };
+        // Highlight the element that just woke up as active
+        yield { array: currentState, highlights: [], active: sorted.length - 1 };
         
         // Only wake up one element per time step for better visualization
         break;
@@ -86,11 +86,11 @@ export function* sleepSort(arr) {
         }
       }
       
-      yield { array: currentState, highlights };
+      yield { array: currentState, highlights, active: null };
     }
   }
   
-  // Final state - show all elements sorted without highlighting
+  // Final state - show all elements sorted, no highlights
   yield { array: sorted, highlights: [] };
   
   return sorted;

@@ -9,11 +9,13 @@ export function* flashSort(arr) {
     max = a[0],
     maxIndex = 0;
   for (let i = 1; i < n; i++) {
+    // Mark current element as active during search
     if (a[i] < min) min = a[i];
     if (a[i] > max) {
       max = a[i];
       maxIndex = i;
     }
+    yield { array: a.slice(), highlights: [maxIndex], active: i };
   }
 
   if (min === max) return; // All elements are equal
@@ -29,7 +31,8 @@ export function* flashSort(arr) {
   for (let i = 0; i < n; i++) {
     const k = getClass(a[i]);
     buckets[k]++;
-    yield { array: a.slice(), highlights: [i] };
+    // Mark current element as active
+    yield { array: a.slice(), active: i };
   }
 
   // Step 4: Accumulate counts
@@ -56,7 +59,9 @@ export function* flashSort(arr) {
       a[dst] = flash;
       flash = tmp;
       count++;
-      yield { array: a.slice(), highlights: [i, dst] };
+      
+      // Mark source as active and destination as comparison
+      yield { array: a.slice(), highlights: [dst], active: i };
     }
   }
 
@@ -64,12 +69,20 @@ export function* flashSort(arr) {
   for (let i = 1; i < n; i++) {
     const key = a[i];
     let j = i - 1;
+    
+    // Mark current key as active
+    yield { array: a.slice(), highlights: [], active: i };
+    
     while (j >= 0 && a[j] > key) {
       a[j + 1] = a[j];
+      // Mark position being compared as highlight
+      yield { array: a.slice(), highlights: [j], active: i };
       j--;
-      yield { array: a.slice(), highlights: [j + 1, i] };
     }
     a[j + 1] = key;
-    yield { array: a.slice(), highlights: [j + 1] };
+    yield { array: a.slice(), highlights: [j + 1], active: i };
   }
+  
+  // Final state
+  yield { array: a.slice(), highlights: [] };
 }

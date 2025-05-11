@@ -16,14 +16,11 @@ export function* heapSort(arr) {
     // Move current root to end
     [a[0], a[i]] = [a[i], a[0]];
     
-    // Visualize the swap
-    yield { array: a.slice(), highlights: [0, i] };
+    // Mark root as active and the placement position as comparison
+    yield { array: a.slice(), highlights: [i], active: 0 };
     
     // Call max heapify on the reduced heap
     yield* heapify(a, i, 0);
-    
-    // Show that we've placed one more element in its final position
-    yield { array: a.slice(), highlights: [i] };
   }
   
   // Final state
@@ -32,8 +29,7 @@ export function* heapSort(arr) {
   return a;
 }
 
-// To heapify a subtree rooted with node i which is
-// an index in arr[]. n is size of heap
+// To heapify a subtree rooted with node i
 function* heapify(arr, n, i) {
   let largest = i; // Initialize largest as root
   const left = 2 * i + 1; // Left child
@@ -49,19 +45,19 @@ function* heapify(arr, n, i) {
     largest = right;
   }
   
-  // Visualize the comparison
-  const highlights = [i];
+  // Mark current node as active and its children as comparison elements
+  const highlights = [];
   if (left < n) highlights.push(left);
   if (right < n) highlights.push(right);
-  yield { array: arr.slice(), highlights };
+  yield { array: arr.slice(), highlights, active: i };
   
   // If largest is not root
   if (largest !== i) {
     // Swap
     [arr[i], arr[largest]] = [arr[largest], arr[i]];
     
-    // Visualize the swap
-    yield { array: arr.slice(), highlights: [i, largest] };
+    // Visualize the swap with active and comparison elements
+    yield { array: arr.slice(), highlights: [i], active: largest };
     
     // Recursively heapify the affected sub-tree
     yield* heapify(arr, n, largest);

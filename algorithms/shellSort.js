@@ -21,24 +21,24 @@ export function* shellSort(arr) {
       // Save a[i] in temp and make a hole at position i
       const temp = a[i];
       
+      // Mark current position as active
+      yield { array: a.slice(), highlights: [], active: i };
+      
       // Shift earlier gap-sorted elements up until the correct location for a[i] is found
       let j;
       for (j = i; j >= gap && a[j - gap] > temp; j -= gap) {
         a[j] = a[j - gap];
         
-        // Visualize each shift
-        yield { array: a.slice(), highlights: [j, j - gap] };
+        // Visualize each shift - highlight position being compared, active is current element
+        yield { array: a.slice(), highlights: [j - gap], active: i };
       }
       
       // Put temp in its correct location
       a[j] = temp;
       
       // Visualize after placing the element
-      yield { array: a.slice(), highlights: [j, i] };
+      yield { array: a.slice(), highlights: [], active: j };
     }
-    
-    // Show the array after one pass of the current gap
-    yield { array: a.slice(), highlights: [] };
   }
   
   // Final state - array is now sorted

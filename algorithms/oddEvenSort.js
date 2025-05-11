@@ -3,29 +3,37 @@ export function* oddEvenSort(arr) {
   const a = arr.slice();
   const n = a.length;
   
-  let sorted = false;
-  
   // Initial state
   yield { array: a.slice(), highlights: [] };
+  
+  let sorted = false;
   
   while (!sorted) {
     sorted = true;
     
-    // Odd phase - compare elements at positions 0,2,4...
+    // Odd phase - compare elements at positions 1,3,5...
     for (let i = 1; i < n - 1; i += 2) {
+      // Mark current position as active and next position as comparison
+      yield { array: a.slice(), highlights: [i + 1], active: i };
+      
       if (a[i] > a[i + 1]) {
         [a[i], a[i + 1]] = [a[i + 1], a[i]];
         sorted = false;
-        yield { array: a.slice(), highlights: [i, i + 1] };
+        // Show after swap
+        yield { array: a.slice(), highlights: [i + 1], active: i };
       }
     }
     
-    // Even phase - compare elements at positions 1,3,5...
+    // Even phase - compare elements at positions 0,2,4...
     for (let i = 0; i < n - 1; i += 2) {
+      // Mark current position as active and next position as comparison
+      yield { array: a.slice(), highlights: [i + 1], active: i };
+      
       if (a[i] > a[i + 1]) {
         [a[i], a[i + 1]] = [a[i + 1], a[i]];
         sorted = false;
-        yield { array: a.slice(), highlights: [i, i + 1] };
+        // Show after swap
+        yield { array: a.slice(), highlights: [i + 1], active: i };
       }
     }
   }

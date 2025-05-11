@@ -12,7 +12,7 @@ export function* radixSort(arr) {
     if (a[i] > max) {
       max = a[i];
     }
-    yield { array: a.slice(), highlights: [i] };
+    yield { array: a.slice(), highlights: [], active: i };
   }
   
   // Count sort for each digit position
@@ -24,7 +24,7 @@ export function* radixSort(arr) {
     for (let i = 0; i < n; i++) {
       const digit = Math.floor(a[i] / exp) % 10;
       count[digit]++;
-      yield { array: a.slice(), highlights: [i] };
+      yield { array: a.slice(), highlights: [], active: i };
     }
     
     // Convert count to cumulative count (position)
@@ -40,23 +40,21 @@ export function* radixSort(arr) {
       const digit = Math.floor(a[i] / exp) % 10;
       output[--count[digit]] = a[i];
       
-      // Create visualization array showing progress
-      const visualArray = new Array(n).fill(0);
-      for (let j = 0; j < n; j++) {
-        if (j < n - i - 1) {
-          visualArray[j] = output[j]; // Already placed
-        } else if (j === n - i - 1) {
-          visualArray[j] = a[i]; // Currently placing
-        } else {
-          visualArray[j] = a[j - (n - i)]; // Not yet placed
-        }
+      // Create visualization showing progress
+      const visualArray = [...a];
+      // Highlight elements processed so far
+      const highlights = [];
+      for (let j = i + 1; j < n; j++) {
+        highlights.push(j);
       }
-      yield { array: visualArray, highlights: [n - i - 1] };
+      
+      yield { array: visualArray, highlights, active: i };
     }
     
     // Copy output to original array for next iteration
     for (let i = 0; i < n; i++) {
       a[i] = output[i];
+      yield { array: a.slice(), highlights: [], active: i };
     }
     
     // Show array after sorting by this digit
