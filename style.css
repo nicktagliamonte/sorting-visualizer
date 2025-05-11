@@ -21,20 +21,20 @@ button {
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 4px;
-  background-color: #3498db;
-  color: #ffffff;
+  background-color: #dae7da;
+  color: #505050;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
 }
 
 button:hover {
-  background-color: #2980b9;
+  background-color: #ccdfcc;
   transform: scale(1.05);
 }
 
 button:active {
-  background-color: #1c5980;
+  background-color: #dae7da;
   transform: scale(0.95);
 }
 
@@ -51,6 +51,7 @@ button:active {
   margin: 0;
   position: relative;
   top: 4px;
+  accent-color: #dae7da; 
 }
 
 #speedSliderLabel {
